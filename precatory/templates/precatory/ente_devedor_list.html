@@ -18,8 +18,9 @@
           <br /><br />
           {% render_table table %}
           <br />
-          <a href="{% url 'ente_devedor_create_alias' %}"><input type="button" class="btn btn-primary" value="Incluir novas ente_devedors" /></a>
-          <a href="{% url 'ente_devedor_em_lote_create_alias' %}"><input type="button" class="btn btn-primary" value="Incluir novas ente_devedors em lote" /></a>
+          <a href="{% url 'ente_devedor_create_alias' %}"><input type="button" class="btn btn-primary" value="Incluir novas entes devedors" /></a>
+          <a href="{% url 'ente_devedor_em_lote_create_alias' %}"><input type="button" class="btn btn-primary" value="Incluir novas entes devedors em lote" /></a>
+          <a href="{% url 'ente_devedor_export_csv' %}"><input type="button" class="btn btn-primary" value="Exportar todos os entes devedores" /></a>
         </center>
       </div>
     </div>

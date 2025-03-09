@@ -13,14 +13,14 @@
     <div class="container">
       <div class="col-md-12 col-sm-12 col-xs-12">
         <center>
-          <p>bdpratico\exemplo01\templates\exemplo01\unidade_menu.html</p>
+          <p>bdpratico\exemplo01\templates\exemplo01\validacao_menu.html</p>
           <img src="{% static 'pessoa.jpg' %}" class="img-fluid" alt="Teste" width="15%" />
           <br /><br />
           {% render_table table %}
           <br />
-          <a href="{% url 'unidade_create_alias' %}"><input type="button" class="btn btn-primary" value="Incluir novas unidades" /></a>
-          <a href="{% url 'unidade_em_lote_create_alias' %}"><input type="button" class="btn btn-primary" value="Incluir novas unidades em lote" /></a>
-          <a href="{% url 'unidade_export_csv' %}">><input type="button" class="btn btn-primary" value="Exportar todas as unidades" /></a>
+          <a href="{% url 'validacao_create_alias' %}"><input type="button" class="btn btn-primary" value="Incluir novas validacaos" /></a>
+          <a href="{% url 'validacao_em_lote_create_alias' %}"><input type="button" class="btn btn-primary" value="Incluir novas validacaos em lote" /></a>
+          <a href="{% url 'validacao_export_csv' %}">><input type="button" class="btn btn-primary" value="Exportar todas as validacaos" /></a>
         </center>
       </div>
     </div>
