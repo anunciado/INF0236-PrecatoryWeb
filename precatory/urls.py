@@ -1,9 +1,12 @@
 from django.contrib import admin
 from django.urls import path
 from . import views
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
-    path('', views.index, name='index1'),
+    path('', views.index, name='index'),
+    path('logout/', LogoutView.as_view(next_page='index'), name='logout'),
+    path('home', views.home, name='home'),
     path('grafico', views.grafico, name='grafico'),
     path('menu_ente_devedor', views.ente_devedor_menu.as_view(), name='ente_devedor_menu_alias'),
     path('ente_devedor_create/', views.ente_devedor_create.as_view(), name='ente_devedor_create_alias'),

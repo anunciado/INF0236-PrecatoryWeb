@@ -32,18 +32,15 @@ def index(request):
     user = authenticate(username=usuario, password=senha)
     if (user is not None):
         login(request, user)
-        request.session['username'] = usuario
-        request.session['password'] = senha
-        request.session['usernamefull'] = user.get_full_name()
-        print(request.session['username'])
-        print(request.session['password'])
-        print(request.session['usernamefull'])
-        return redirect('ente_devedor_menu_alias')
+        return redirect('home')
     else:
         data = {}
         if (usuario):
             data['msg'] = "Usuário ou Senha Incorretos " + usuario
         return render(request, 'index.html', data)
+
+def home(request):
+    return render(request, 'home.html')
 
 def grafico(request):
     exame_tmp = exame.objects.all()
