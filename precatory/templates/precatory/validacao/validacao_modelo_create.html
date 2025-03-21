@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Treinamento do Modelo de Baixa</title>
+    <title>Treinamento do Modelo de Validação</title>
     {% load static %}
     {% load bootstrap5 %}
     {% bootstrap_css %}
@@ -18,7 +18,7 @@
         <div class="col-md-6 col-sm-8 col-10">
             <div class="card shadow-sm">
                 <div class="card-header text-center">
-                    <h2>Treinamento do Modelo de Baixa</h2>
+                    <h2>Treinamento do Modelo de Validação</h2>
                 </div>
                 <div class="card-body">
                     <form action="{% url 'train_validacao_model' %}" method="post">
@@ -32,26 +32,15 @@
                                     <a href="{% url 'download_validacao_model' %}">Baixar Modelo</a>
                                 </div>
                                 <div class="alert alert-info mt-3">
-                                    <h1>Desempenho do Modelo</h1>
+                                    <h2>Desempenho do Modelo</h2>
+                                    <h5>Métricas de Desempenho</h5>
+                                    <p><strong>MAE (Erro Absoluto Médio):</strong> {{ mae|floatformat:2 }}</p>
+                                    <p><strong>MSE (Erro Quadrático Médio):</strong> {{ mse|floatformat:2 }}</p>
+                                    <p><strong>RMSE (Raiz do Erro Quadrático Médio):</strong> {{ rmse|floatformat:2 }}
+                                    </p>
+                                    <p><strong>R² (Coeficiente de Determinação):</strong> {{ r2|floatformat:2 }} </p>
 
-                                    <h2>Melhores Parâmetros Encontrados</h2>
-                                    <ul>
-                                        {% for param, value in melhores_parametros.items %}
-                                            <li><strong>{{ param }}:</strong> {{ value }}</li>
-                                        {% endfor %}
-                                    </ul>
-
-                                    <h2>Métricas de Desempenho</h2>
-                                    <ul>
-                                        <li><strong>MAE (Mean Absolute Error):</strong> {{ mae|floatformat:2 }}</li>
-                                        <li><strong>MSE (Mean Squared Error):</strong> {{ mse|floatformat:2 }}</li>
-                                        <li><strong>RMSE (Root Mean Squared Error):</strong> {{ rmse|floatformat:2 }}
-                                        </li>
-                                        <li><strong>R² (Coeficiente de Determinação):</strong> {{ r2|floatformat:2 }}
-                                        </li>
-                                    </ul>
-
-                                    <h2>Gráfico de Linha (Valores Reais vs. Preditos)</h2>
+                                    <h5>Gráfico de Linha (Datas Reais vs. Preditas)</h5>
                                     <div id="line-plot">
                                         {{ line_plot_html|safe }}
                                     </div>

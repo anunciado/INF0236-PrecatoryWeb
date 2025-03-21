@@ -2,6 +2,7 @@ import csv
 import os
 
 import joblib
+import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.offline as pyo
@@ -17,10 +18,8 @@ from django.views.generic.edit import DeleteView
 from django.views.generic.edit import UpdateView
 from django_tables2 import SingleTableView
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-import numpy as np
+from sklearn.model_selection import train_test_split
 
 from .forms import CSVUploadForm
 from .models import autuacao
@@ -558,43 +557,29 @@ def train_validacao_model(request):
     X = df.drop('data_da_validacao', axis=1)
     y = df['data_da_validacao']
 
-    # Treinando o modelo
+    # Dividindo os dados em treino e teste
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    # Dicionário para armazenar os resultados dos modelos
-    # Definindo o espaço de hiperparâmetros
-    param_grid = {
-        'n_estimators': [50, 100, 200, 300],
-        'max_depth': [None, 10, 20, 30, 50],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4],
-        'max_features': ['auto', 'sqrt', 'log2'],
-        'bootstrap': [True, False]
-    }
 
-    # Criando o modelo RandomForestRegressor
-    rf = RandomForestRegressor(random_state=42)
-
-    # Usando GridSearchCV para buscar os melhores hiperparâmetros
-    grid_search = GridSearchCV(
-        estimator=rf,
-        param_grid=param_grid,
-        cv=3,  # 3-fold cross-validation
-        scoring='neg_mean_squared_error',  # Métrica de avaliação
-        n_jobs=-1,  # Usar todos os núcleos do processador
-        verbose=2  # Mostrar logs durante a execução
+    # Configurando o RandomForestRegressor com os melhores parâmetros
+    modelo = RandomForestRegressor(
+        bootstrap=False,
+        max_depth=30,
+        max_features='sqrt',
+        min_samples_leaf=1,
+        min_samples_split=2,
+        n_estimators=300,
+        random_state=42
     )
 
-    # Treinando o modelo com GridSearchCV
-    grid_search.fit(X_train, y_train)
+    # Treinando o modelo
+    modelo.fit(X_train, y_train)
 
-    # Melhores parâmetros encontrados
-    melhores_parametros = grid_search.best_params_
-
-    # Melhor modelo
-    melhor_modelo = grid_search.best_estimator_
+    # Salvar modelo
+    model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_validacao_predicao.pkl')
+    joblib.dump(modelo, model_path)
 
     # Fazendo previsões com o melhor modelo
-    y_pred = melhor_modelo.predict(X_test)
+    y_pred = modelo.predict(X_test)
 
     # Calculando métricas de desempenho
     mae = mean_absolute_error(y_test, y_pred)
@@ -602,13 +587,9 @@ def train_validacao_model(request):
     rmse = np.sqrt(mse)
     r2 = r2_score(y_test, y_pred)
 
-    # Salvando o melhor modelo
-    model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_validacao_predicao.pkl')
-    joblib.dump(melhor_modelo, model_path)
-
     # Convertendo os valores numéricos de volta para datas
     y_test_dates = pd.to_datetime(y_test * 10 ** 9)  # Convertendo de segundos para datetime
-    y_pred_dates = pd.to_datetime(y_pred * 10 ** 9)  # Convertendo de segundos para datetime
+    y_pred_dates = pd.to_datetime(modelo.predict(X_test) * 10 ** 9)  # Usando o melhor modelo
 
     # Gerando gráficos com Plotly
     # Gráfico de Linha (Valores Reais vs. Preditos)
@@ -616,18 +597,18 @@ def train_validacao_model(request):
         x=y_test_dates,
         y=y_test_dates,
         mode='lines',
-        name='Valores Reais',
+        name='Datas Reais',
         line=dict(color='blue')
     )
     line_pred = go.Scatter(
         x=y_test_dates,
         y=y_pred_dates,
         mode='lines+markers',
-        name='Valores Preditos',
+        name='Datas Preditas',
         line=dict(color='red', dash='dash')
     )
     layout = go.Layout(
-        title='Valores Reais vs. Valores Preditos (Datas)',
+        title='Datas Reais vs. Datas Preditas',
         xaxis=dict(title='Data Real'),
         yaxis=dict(title='Data Predita'),
         showlegend=True
@@ -637,7 +618,6 @@ def train_validacao_model(request):
 
     # Renderizando a página com os resultados
     return render(request, 'precatory/validacao/validacao_modelo_create.html', {
-        'melhores_parametros': melhores_parametros,
         'mae': mae,
         'mse': mse,
         'rmse': rmse,
@@ -645,7 +625,6 @@ def train_validacao_model(request):
         'line_plot_html': line_plot_html,
         'model_path': model_path
     })
-
 
 def download_validacao_model(request):
     model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_validacao_predicao.pkl')
