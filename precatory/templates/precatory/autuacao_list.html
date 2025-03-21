@@ -4,25 +4,40 @@
 {% bootstrap_javascript %}
 {% bootstrap_messages %}
 {% load render_table from django_tables2 %}
+
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Menu de Pessoas</title>
-  </head>
-  <body>
-    <div class="container">
-      <div class="col-md-12 col-sm-12 col-xs-12">
-        <center>
-          <p>bdpratico\exemplo01\templates\exemplo01\autuacao_menu.html</p>
-          <img src="{% static 'pessoa.jpg' %}" class="img-fluid" alt="Teste" width="15%" />
-          <br /><br />
-          {% render_table table %}
-          <br />
-          <a href="{% url 'autuacao_create_alias' %}"><input type="button" class="btn btn-primary" value="Incluir novas autuacaos" /></a>
-          <a href="{% url 'autuacao_em_lote_create_alias' %}"><input type="button" class="btn btn-primary" value="Incluir novas autuacaos em lote" /></a>
-          <a href="{% url 'autuacao_export_csv' %}">><input type="button" class="btn btn-primary" value="Exportar todas as autuacaos" /></a>
-        </center>
-      </div>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lista de Autuações</title>
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5><a href="{% url 'home' %}">Página Inicial</a></h5>
+            <div class="d-flex">
+                <span class="navbar-text me-3">Bem-vindo, {{ user }}</span>
+                <a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            {% render_table table %}
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'autuacao_create_alias' %}" class="btn btn-primary">
+                Incluir novas autuações
+            </a>
+            <a href="{% url 'autuacao_em_lote_create_alias' %}" class="btn btn-secondary">
+                Incluir novas autuações em lote
+            </a>
+            <a href="{% url 'autuacao_export_csv' %}" class="btn btn-success">
+                Exportar todas as autuações
+            </a>
+        </div>
     </div>
-  </body>
+</body>
 </html>

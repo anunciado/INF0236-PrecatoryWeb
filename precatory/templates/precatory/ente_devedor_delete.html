@@ -3,24 +3,33 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 {% bootstrap_messages %}
+
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Excluir Pessoas</title>
-  </head>
-  <body>
-    <div class="container">
-      <div class="col-md-12 col-sm-12 col-xs-12">
-        <center>
-          <p>bdpratico\exemplo01\templates\exemplo01\ente_devedor_delete.html</p>
-          <img src="{% static 'ente_devedor.jpg' %}" class="img-fluid" alt="Teste" width="15%" />
-          <form method="POST">
-            {% csrf_token %}
-            <p>{{ object.nome }}</p>
-            <button type="submit" class="btn btn-danger">Sim, exclua!</button> &nbsp;
-          </form>
-        </center>
-      </div>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excluir Ente Devedor</title>
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-sm-8 col-10">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h3 class="mb-4">Excluir Ente Devedor</h3>
+                    <p class="lead">Você tem certeza que deseja excluir o ente devedor <strong>{{ object.nome }}</strong>?</p>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg">Sim, exclua!</button> &nbsp;
+                        <a href="{% url 'ente_devedor_menu_alias' %}" class="btn btn-success btn-lg">Voltar</a> &nbsp;
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-  </body>
+</div>
+</body>
 </html>

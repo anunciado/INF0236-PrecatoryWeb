@@ -5,90 +5,91 @@
     {% load bootstrap5 %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
-        <style>
-        body {
-            background-color: #f8f9fa;
-        }
+    <style>
         .navbar {
             background-color: #007bff;
         }
+
         .navbar-brand, .nav-link {
             color: #fff !important;
         }
+
         .card {
             transition: transform 0.3s ease-in-out;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .card:hover {
             transform: scale(1.05);
         }
+
         .card-body h5 {
             font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <h5>Página Inicial</h5>
-            <div class="d-flex">
-                <span class="navbar-text me-3">Bem-vindo, {{ user }}</span>
-                <a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
-            </div>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h5>Página Inicial</h5>
+        <div class="d-flex">
+            <span class="navbar-text me-3">Bem-vindo, {{ user }}</span>
+            <a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
         </div>
-        <div class="row mt-3">
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5>Ente Devedor</h5>
-                        <a href="{% url 'ente_devedor_menu_alias' %}" class="btn btn-primary">Gerenciar</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5>Unidade Jurisdicional</h5>
-                        <a href="{% url 'unidade_menu_alias' %}" class="btn btn-primary">Gerenciar</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5>Validação</h5>
-                        <a href="{% url 'validacao_menu_alias' %}" class="btn btn-primary">Gerenciar</a>
-                    </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Ente Devedor</h5>
+                    <a href="{% url 'ente_devedor_menu_alias' %}" class="btn btn-info">Gerenciar</a>
                 </div>
             </div>
         </div>
-        <div class="row mt-3">
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5>Autuação</h5>
-                        <a href="{% url 'autuacao_menu_alias' %}" class="btn btn-primary">Gerenciar</a>
-                    </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Unidade Jurisdicional</h5>
+                    <a href="{% url 'unidade_menu_alias' %}" class="btn btn-info">Gerenciar</a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5>Baixa</h5>
-                        <a href="{% url 'baixa_menu_alias' %}" class="btn btn-primary">Gerenciar</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5>Inteligência Artificial</h5>
-                        <a href="{% url 'validacao_create_alias' %}" class="btn btn-primary">Acessar</a>
-                    </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Validação</h5>
+                    <a href="{% url 'validacao_menu_alias' %}" class="btn btn-info">Gerenciar</a>
                 </div>
             </div>
         </div>
     </div>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Autuação</h5>
+                    <a href="{% url 'autuacao_menu_alias' %}" class="btn btn-info">Gerenciar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Baixa</h5>
+                    <a href="{% url 'baixa_menu_alias' %}" class="btn btn-info">Gerenciar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Inteligência Artificial</h5>
+                    <a href="{% url 'validacao_create_alias' %}" class="btn btn-info">Acessar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
