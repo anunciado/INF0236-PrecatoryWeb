@@ -196,7 +196,7 @@ class unidade_update(UpdateView):
 
 class unidade_delete(DeleteView):
     model = unidade
-    fields = ['nome', 'uuid', 'ativo']
+    fields = ['nome', 'rhid', 'ativo']
     template_name_suffix = '_delete'
 
     def get_success_url(self):
