@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload CSV de Ente Devedor</title>
+    <title>Upload do Arquivo CSV de Entes Devedores</title>
     {% load static %}
     {% load bootstrap5 %}
     {% bootstrap_css %}
@@ -17,7 +17,7 @@
         <div class="col-md-6 col-sm-8 col-10">
             <div class="card shadow-sm">
                 <div class="card-header text-center">
-                    <h2>Upload do Arquivo CSV de Ente Devedor</h2>
+                    <h2>Upload do Arquivo CSV de Entes Devedores</h2>
                 </div>
                 <div class="card-body">
                     <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
@@ -31,6 +31,9 @@
                             <a href="{% url 'ente_devedor_menu_alias' %}" class="btn btn-success btn-lg">Voltar</a>
                             &nbsp;
                         </div>
+                        {% if msg %}
+                            <div class="alert alert-warning mt-3">{{ msg }}</div>
+                        {% endif %}
                     </form>
                 </div>
             </div>

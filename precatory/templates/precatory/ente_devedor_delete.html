@@ -20,7 +20,8 @@
             <div class="card shadow-sm">
                 <div class="card-body text-center">
                     <h3 class="mb-4">Excluir Ente Devedor</h3>
-                    <p class="lead">Você tem certeza que deseja excluir o ente devedor <strong>{{ object.nome }}</strong>?</p>
+                    <p class="lead">Você tem certeza que deseja excluir o ente devedor
+                        <strong>{{ object.nome }}</strong>?</p>
                     <form method="POST">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger btn-lg">Sim, exclua!</button> &nbsp;

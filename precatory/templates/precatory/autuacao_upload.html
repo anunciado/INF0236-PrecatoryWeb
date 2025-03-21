@@ -1,34 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>Upload CSV</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload do Arquivo CSV de Autuações</title>
+    {% load static %}
     {% load bootstrap5 %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
+    <link href="css/styles.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h2>Upload CSV File</h2>
-                    </div>
-                    <div class="card-body">
-                        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="file" class="form-label">Selecione o arquivo CSV:</label>
-                                {{ form.file }}
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-success w-100">Upload</button>
-                            </div>
-                        </form>
-                    </div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-sm-8 col-10">
+            <div class="card shadow-sm">
+                <div class="card-header text-center">
+                    <h2>Upload do Arquivo CSV de Autuações</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="file" class="form-label">Selecione o arquivo CSV:</label>
+                            {{ form.file }}
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-info btn-lg">Fazer Upload</button>
+                            <a href="{% url 'validacao_menu_alias' %}" class="btn btn-success btn-lg">Voltar</a>
+                            &nbsp;
+                        </div>
+                        {% if msg %}
+                            <div class="alert alert-warning mt-3">{{ msg }}</div>
+                        {% endif %}
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>

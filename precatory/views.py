@@ -69,20 +69,26 @@ class ente_devedor_menu(SingleTableView):
     template_name = 'precatory/ente_devedor_list.html'
 
 def ente_devedor_em_lote_create(request):
-    if request.method == "POST":
-        form = CSVUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES["file"].read().decode("utf-8").splitlines()
-            reader = csv.DictReader(file)
-            for row in reader:
-                ente_devedor.objects.create(
-                    uuid=row["enteDevedorId"],
-                    nome=row["enteDevedorNome"]
-                )
-            return redirect("ente_devedor_menu_alias")
-    else:
-        form = CSVUploadForm()
-    return render(request, "precatory/ente_devedor_upload.html", {"form": form})
+    try:
+        if request.method == "POST":
+            form = CSVUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                file = request.FILES["file"].read().decode("utf-8").splitlines()
+                reader = csv.DictReader(file)
+                for row in reader:
+                    ente_devedor.objects.create(
+                        uuid=row["enteDevedorId"],
+                        nome=row["enteDevedorNome"]
+                    )
+                return redirect("ente_devedor_menu_alias")
+        else:
+            form = CSVUploadForm()
+            return render(request, "precatory/ente_devedor_upload.html", {"form": form})
+    except:
+        data = {}
+        data['msg'] = "Não foi possível carregar os dados"
+        data['form'] = CSVUploadForm()
+        return render(request, "precatory/ente_devedor_upload.html", data)
 
 class ente_devedor_create(CreateView):
     model = ente_devedor
@@ -140,24 +146,30 @@ class unidade_menu(SingleTableView):
     template_name = 'precatory/unidade_list.html'
 
 def unidade_em_lote_create(request):
-    if request.method == "POST":
-        form = CSVUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES["file"].read().decode("utf-8").splitlines()
-            reader = csv.DictReader(file)
-            for row in reader:
-                unidade.objects.create(
-                    rhid=row["unidadeId"],
-                    nome=row["unidadeNome"]
-                )
-            return redirect("unidade_menu_alias")
-    else:
-        form = CSVUploadForm()
-    return render(request, "precatory/unidade_upload.html", {"form": form})
+    try:
+        if request.method == "POST":
+            form = CSVUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                file = request.FILES["file"].read().decode("utf-8").splitlines()
+                reader = csv.DictReader(file)
+                for row in reader:
+                    unidade.objects.create(
+                        rhid=row["unidadeId"],
+                        nome=row["unidadeNome"]
+                    )
+                return redirect("unidade_menu_alias")
+        else:
+            form = CSVUploadForm()
+        return render(request, "precatory/unidade_upload.html", {"form": form})
+    except:
+        data = {}
+        data['msg'] = "Não foi possível carregar os dados"
+        data['form'] = CSVUploadForm()
+        return render(request, "precatory/unidade_upload.html", data)
 
 class unidade_create(CreateView):
     model = unidade
-    fields = ['nome', 'uuid', 'ativo']
+    fields = ['nome', 'rhid', 'ativo']
 
     def get_success_url(self):
         return reverse_lazy('unidade_menu_alias')
@@ -176,7 +188,7 @@ class unidade_list(ListView):
 
 class unidade_update(UpdateView):
     model = unidade
-    fields = ['nome', 'uuid', 'ativo']
+    fields = ['nome', 'rhid', 'ativo']
 
     def get_success_url(self):
         return reverse_lazy('unidade_menu_alias')
@@ -211,26 +223,32 @@ class validacao_menu(SingleTableView):
     template_name = 'precatory/validacao_list.html'
 
 def validacao_em_lote_create(request):
-    if request.method == "POST":
-        form = CSVUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES["file"].read().decode("utf-8").splitlines()
-            reader = csv.DictReader(file)
-            for row in reader:
-                validacao.objects.create(
-                    data_da_criacao=row["dataDaCriacao"],
-                    tipo_de_pessoa=row["tipoDePessoa"],
-                    data_de_nascimento=row["dataDeNascimento"],
-                    classificacao_da_doenca=row["classificacaoDaDoenca"],
-                    ente_devedor=ente_devedor.objects.get(uuid=row["enteDevedorId"]),
-                    unidade=unidade.objects.get(rhid=row["unidadeId"]),
-                    valor=row["valor"],
-                    data_da_validacao=row["dataDaValidacao"],
-                )
-            return redirect("validacao_menu_alias")
-    else:
-        form = CSVUploadForm()
-    return render(request, "precatory/validacao_upload.html", {"form": form})
+    try:
+        if request.method == "POST":
+            form = CSVUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                file = request.FILES["file"].read().decode("utf-8").splitlines()
+                reader = csv.DictReader(file)
+                for row in reader:
+                    validacao.objects.create(
+                        data_da_criacao=row["dataDaCriacao"],
+                        tipo_de_pessoa=row["tipoDePessoa"],
+                        data_de_nascimento=row["dataDeNascimento"],
+                        classificacao_da_doenca=row["classificacaoDaDoenca"],
+                        ente_devedor=ente_devedor.objects.get(uuid=row["enteDevedorId"]),
+                        unidade=unidade.objects.get(rhid=row["unidadeId"]),
+                        valor=row["valor"],
+                        data_da_validacao=row["dataDaValidacao"],
+                    )
+                return redirect("validacao_menu_alias")
+        else:
+            form = CSVUploadForm()
+        return render(request, "precatory/validacao_upload.html", {"form": form})
+    except:
+        data = {}
+        data['msg'] = "Não foi possível carregar os dados"
+        data['form'] = CSVUploadForm()
+        return render(request, "precatory/validacao_upload.html", data)
 
 class validacao_create(CreateView):
     model = validacao
@@ -298,28 +316,34 @@ class autuacao_menu(SingleTableView):
     template_name = 'precatory/autuacao_list.html'
 
 def autuacao_em_lote_create(request):
-    if request.method == "POST":
-        form = CSVUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES["file"].read().decode("utf-8").splitlines()
-            reader = csv.DictReader(file)
-            for row in reader:
-                autuacao.objects.create(
-                    data_da_criacao=row["dataDaCriacao"],
-                    tipo_de_pessoa=row["tipoDePessoa"],
-                    data_de_nascimento=row["dataDeNascimento"],
-                    classificacao_da_doenca=row["classificacaoDaDoenca"],
-                    ente_devedor=ente_devedor.objects.get(uuid=row["enteDevedorId"]),
-                    unidade=unidade.objects.get(rhid=row["unidadeId"]),
-                    valor=row["valor"],
-                    data_da_validacao=row["dataDaValidacao"],
-                    ano_de_orcamento=row["anoDeOrcamento"],
-                    data_da_autuacao=row["dataDaAutuacao"]
-                )
-            return redirect("autuacao_menu_alias")
-    else:
-        form = CSVUploadForm()
-    return render(request, "precatory/autuacao_upload.html", {"form": form})
+    try:
+        if request.method == "POST":
+            form = CSVUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                file = request.FILES["file"].read().decode("utf-8").splitlines()
+                reader = csv.DictReader(file)
+                for row in reader:
+                    autuacao.objects.create(
+                        data_da_criacao=row["dataDaCriacao"],
+                        tipo_de_pessoa=row["tipoDePessoa"],
+                        data_de_nascimento=row["dataDeNascimento"],
+                        classificacao_da_doenca=row["classificacaoDaDoenca"],
+                        ente_devedor=ente_devedor.objects.get(uuid=row["enteDevedorId"]),
+                        unidade=unidade.objects.get(rhid=row["unidadeId"]),
+                        valor=row["valor"],
+                        data_da_validacao=row["dataDaValidacao"],
+                        ano_de_orcamento=row["anoDeOrcamento"],
+                        data_da_autuacao=row["dataDaAutuacao"]
+                    )
+                return redirect("autuacao_menu_alias")
+        else:
+            form = CSVUploadForm()
+        return render(request, "precatory/autuacao_upload.html", {"form": form})
+    except:
+        data = {}
+        data['msg'] = "Não foi possível carregar os dados"
+        data['form'] = CSVUploadForm()
+        return render(request, "precatory/autuacao_upload.html", data)
 
 class autuacao_create(CreateView):
     model = autuacao
@@ -387,29 +411,36 @@ class baixa_menu(SingleTableView):
     template_name = 'precatory/baixa_list.html'
 
 def baixa_em_lote_create(request):
-    if request.method == "POST":
-        form = CSVUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES["file"].read().decode("utf-8").splitlines()
-            reader = csv.DictReader(file)
-            for row in reader:
-                baixa.objects.create(
-                    data_da_criacao=row["dataDaCriacao"],
-                    tipo_de_pessoa=row["tipoDePessoa"],
-                    data_de_nascimento=row["dataDeNascimento"],
-                    classificacao_da_doenca=row["classificacaoDaDoenca"],
-                    ente_devedor=ente_devedor.objects.get(uuid=row["enteDevedorId"]),
-                    unidade=unidade.objects.get(rhid=row["unidadeId"]),
-                    valor=row["valor"],
-                    data_da_validacao=row["dataDaValidacao"],
-                    ano_de_orcamento=row["anoDeOrcamento"],
-                    data_da_autuacao=row["dataDaAutuacao"],
-                    data_da_baixa=row["dataDaBaixa"],
-                )
-            return redirect("baixa_menu_alias")
-    else:
-        form = CSVUploadForm()
-    return render(request, "precatory/baixa_upload.html", {"form": form})
+    try:
+        if request.method == "POST":
+            form = CSVUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                file = request.FILES["file"].read().decode("utf-8").splitlines()
+                reader = csv.DictReader(file)
+                for row in reader:
+                    baixa.objects.create(
+                        data_da_criacao=row["dataDaCriacao"],
+                        tipo_de_pessoa=row["tipoDePessoa"],
+                        data_de_nascimento=row["dataDeNascimento"],
+                        classificacao_da_doenca=row["classificacaoDaDoenca"],
+                        ente_devedor=ente_devedor.objects.get(uuid=row["enteDevedorId"]),
+                        unidade=unidade.objects.get(rhid=row["unidadeId"]),
+                        valor=row["valor"],
+                        data_da_validacao=row["dataDaValidacao"],
+                        ano_de_orcamento=row["anoDeOrcamento"],
+                        data_da_autuacao=row["dataDaAutuacao"],
+                        data_da_baixa=row["dataDaBaixa"],
+                    )
+                return redirect("baixa_menu_alias")
+        else:
+            form = CSVUploadForm()
+        return render(request, "precatory/baixa_upload.html", {"form": form})
+
+    except:
+        data = {}
+        data['msg'] = "Não foi possível carregar os dados"
+        data['form'] = CSVUploadForm()
+        return render(request, "precatory/baixa_upload.html", data)
 
 class baixa_create(CreateView):
     model = baixa
