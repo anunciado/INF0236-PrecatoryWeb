@@ -246,7 +246,7 @@ def validacao_em_lote_create(request):
                     validacao.objects.create(
                         data_da_criacao=row["dataDaCriacao"],
                         tipo_de_pessoa=row["tipoDePessoa"],
-                        data_de_nascimento=row["dataDeNascimento"],
+                        data_de_nascimento=row["dataDeNascimento"] if row["dataDeNascimento"] != "0" else None,
                         classificacao_da_doenca=row["classificacaoDaDoenca"],
                         ente_devedor=ente_devedor.objects.get(uuid=row["enteDevedorId"]),
                         unidade=unidade.objects.get(rhid=row["unidadeId"]),
@@ -343,7 +343,7 @@ def autuacao_em_lote_create(request):
                     autuacao.objects.create(
                         data_da_criacao=row["dataDaCriacao"],
                         tipo_de_pessoa=row["tipoDePessoa"],
-                        data_de_nascimento=row["dataDeNascimento"],
+                        data_de_nascimento=row["dataDeNascimento"] if row["dataDeNascimento"] != "0" else None,
                         classificacao_da_doenca=row["classificacaoDaDoenca"],
                         ente_devedor=ente_devedor.objects.get(uuid=row["enteDevedorId"]),
                         unidade=unidade.objects.get(rhid=row["unidadeId"]),
@@ -442,7 +442,7 @@ def baixa_em_lote_create(request):
                     baixa.objects.create(
                         data_da_criacao=row["dataDaCriacao"],
                         tipo_de_pessoa=row["tipoDePessoa"],
-                        data_de_nascimento=row["dataDeNascimento"],
+                        data_de_nascimento=row["dataDeNascimento"] if row["dataDeNascimento"] != "0" else None,
                         classificacao_da_doenca=row["classificacaoDaDoenca"],
                         ente_devedor=ente_devedor.objects.get(uuid=row["enteDevedorId"]),
                         unidade=unidade.objects.get(rhid=row["unidadeId"]),

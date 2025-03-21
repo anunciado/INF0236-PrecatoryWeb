@@ -28,7 +28,7 @@ class validacao(models.Model):
     tipo_de_pessoa = models.CharField(
         max_length=2, choices=[('PF', 'Pessoa Física'), ('PJ', 'Pessoa Jurídica')], verbose_name='Tipo de Pessoa'
     )
-    data_de_nascimento = models.DateField(verbose_name='Data de Nascimento')
+    data_de_nascimento = models.DateField(verbose_name='Data de Nascimento', null=True, blank=True)
     classificacao_da_doenca = models.CharField(max_length=50, verbose_name='Classificação da Doença')
     ente_devedor = models.ForeignKey('ente_devedor', on_delete=models.CASCADE, verbose_name='Ente Devedor')
     unidade = models.ForeignKey('unidade', on_delete=models.CASCADE, verbose_name='Unidade')
@@ -48,7 +48,7 @@ class autuacao(models.Model):
     tipo_de_pessoa = models.CharField(
         max_length=2, choices=[('PF', 'Pessoa Física'), ('PJ', 'Pessoa Jurídica')], verbose_name='Tipo de Pessoa'
     )
-    data_de_nascimento = models.DateField(verbose_name='Data de Nascimento')
+    data_de_nascimento = models.DateField(verbose_name='Data de Nascimento', null=True, blank=True)
     classificacao_da_doenca = models.CharField(max_length=50, verbose_name='Classificação da Doença')
     ente_devedor = models.ForeignKey('ente_devedor', on_delete=models.CASCADE, verbose_name='Ente Devedor')
     unidade = models.ForeignKey('unidade', on_delete=models.CASCADE, verbose_name='Unidade')
@@ -70,7 +70,7 @@ class baixa(models.Model):
     tipo_de_pessoa = models.CharField(
         max_length=2, choices=[('PF', 'Pessoa Física'), ('PJ', 'Pessoa Jurídica')], verbose_name='Tipo de Pessoa'
     )
-    data_de_nascimento = models.DateField(verbose_name='Data de Nascimento')
+    data_de_nascimento = models.DateField(verbose_name='Data de Nascimento', null=True, blank=True)
     classificacao_da_doenca = models.CharField(max_length=50, verbose_name='Classificação da Doença')
     ente_devedor = models.ForeignKey('ente_devedor', on_delete=models.CASCADE, verbose_name='Ente Devedor')
     unidade = models.ForeignKey('unidade', on_delete=models.CASCADE, verbose_name='Unidade')
