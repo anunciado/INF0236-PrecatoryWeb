@@ -19,6 +19,8 @@ from django_tables2 import SingleTableView
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+import numpy as np
 
 from .forms import CSVUploadForm
 from .models import autuacao
@@ -650,23 +652,39 @@ def train_baixa_model(request):
     X = df.drop('data_da_baixa', axis=1)
     y = df['data_da_baixa']
 
-    # Treinando o modelo
+    # Dividindo os dados em treino e teste
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    modelo = RandomForestRegressor(n_estimators=100, random_state=42)
+
+    # Configurando o RandomForestRegressor com os melhores parâmetros
+    modelo = RandomForestRegressor(
+        bootstrap=False,
+        max_depth=20,
+        max_features='sqrt',
+        min_samples_leaf=1,
+        min_samples_split=2,
+        n_estimators=300,
+        random_state=42
+    )
+
+    # Treinando o modelo
     modelo.fit(X_train, y_train)
 
     # Salvar modelo
     model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_baixa_predicao.pkl')
     joblib.dump(modelo, model_path)
 
-    # Calculando métricas de desempenho
+    # Fazendo previsões com o melhor modelo
     y_pred = modelo.predict(X_test)
+
+    # Calculando métricas de desempenho
+    mae = mean_absolute_error(y_test, y_pred)
     mse = mean_squared_error(y_test, y_pred)
+    rmse = np.sqrt(mse)
     r2 = r2_score(y_test, y_pred)
 
     # Convertendo os valores numéricos de volta para datas
     y_test_dates = pd.to_datetime(y_test * 10 ** 9)  # Convertendo de segundos para datetime
-    y_pred_dates = pd.to_datetime(y_pred * 10 ** 9)  # Convertendo de segundos para datetime
+    y_pred_dates = pd.to_datetime(modelo.predict(X_test) * 10 ** 9)  # Usando o melhor modelo
 
     # Gerando gráficos com Plotly
     # Gráfico de Linha (Valores Reais vs. Preditos)
@@ -674,18 +692,18 @@ def train_baixa_model(request):
         x=y_test_dates,
         y=y_test_dates,
         mode='lines',
-        name='Valores Reais',
+        name='Datas Reais',
         line=dict(color='blue')
     )
     line_pred = go.Scatter(
         x=y_test_dates,
         y=y_pred_dates,
         mode='lines+markers',
-        name='Valores Preditos',
+        name='Datas Preditas',
         line=dict(color='red', dash='dash')
     )
     layout = go.Layout(
-        title='Valores Reais vs. Valores Preditos (Datas)',
+        title='Datas Reais vs. Datas Preditas',
         xaxis=dict(title='Data Real'),
         yaxis=dict(title='Data Predita'),
         showlegend=True
@@ -693,33 +711,15 @@ def train_baixa_model(request):
     fig = go.Figure(data=[line_real, line_pred], layout=layout)
     line_plot_html = pyo.plot(fig, output_type='div', include_plotlyjs=False)
 
-    # Gráfico de Resíduos (Diferença entre Datas)
-    residuos = (y_test_dates - y_pred_dates).dt.days  # Diferença em dias
-    residuos_plot = go.Scatter(
-        x=y_test_dates,
-        y=residuos,
-        mode='markers',
-        name='Resíduos (Dias)',
-        marker=dict(color='green')
-    )
-    layout_residuos = go.Layout(
-        title='Gráfico de Resíduos (Diferença em Dias)',
-        xaxis=dict(title='Data Real'),
-        yaxis=dict(title='Resíduos (Dias)'),
-        showlegend=True
-    )
-    fig_residuos = go.Figure(data=[residuos_plot], layout=layout_residuos)
-    residuos_plot_html = pyo.plot(fig_residuos, output_type='div', include_plotlyjs=False)
-
-    # Renderizando a página com as métricas e gráficos
+    # Renderizando a página com os resultados
     return render(request, 'precatory/baixa/baixa_modelo_create.html', {
+        'mae': mae,
         'mse': mse,
+        'rmse': rmse,
         'r2': r2,
         'line_plot_html': line_plot_html,
-        'residuos_plot_html': residuos_plot_html,
         'model_path': model_path
     })
-
 
 def download_baixa_model(request):
     model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_baixa_predicao.pkl')
