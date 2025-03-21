@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treinamento do Modelo de Baixa</title>
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link href="../../../static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-sm-8 col-10">
+            <div class="card shadow-sm">
+                <div class="card-header text-center">
+                    <h2>Treinamento do Modelo de Baixa</h2>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'train_baixa_model' %}" method="post">
+                        {% csrf_token %}
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-info btn-lg">Treinar Modelo</button>
+                            <a href="{% url 'ia_menu_alias' %}" class="btn btn-success btn-lg">Voltar</a>
+                            {% if model_path %}
+                                <div class="alert alert-warning mt-3">
+                                    <p>Modelo treinado com sucesso!</p>
+                                    <a href="{% url 'download_baixa_model' %}">Baixar Modelo</a></div>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

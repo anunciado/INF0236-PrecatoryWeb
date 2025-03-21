@@ -25,6 +25,14 @@ from .models import autuacao
 from .tables import autuacao_table
 from .models import validacao
 from .tables import validacao_table
+import os
+import joblib
+import pandas as pd
+from django.shortcuts import render
+from django.http import HttpResponse
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from django.conf import settings
 
 
 def index(request):
@@ -44,6 +52,21 @@ def index(request):
 def home(request):
     return render(request, 'home.html')
 
+
+def ia_menu(request):
+    return render(request, 'precatory/menu_ia.html')
+
+
+def validacao_modelo_create(request):
+    return render(request, 'precatory/validacao/validacao_modelo_create.html')
+
+
+def autuacao_modelo_create(request):
+    return render(request, 'precatory/autuacao/autuacao_modelo_create.html')
+
+
+def baixa_modelo_create(request):
+    return render(request, 'precatory/baixa/baixa_modelo_create.html')
 
 def grafico(request):
     exame_tmp = exame.objects.all()
@@ -70,7 +93,7 @@ class ente_devedor_menu(SingleTableView):
     table_class = ente_devedor_table
     template_name_suffix = '_menu'
     table_pagination = {"per_page": 5}
-    template_name = 'precatory/ente_devedor_list.html'
+    template_name = 'precatory/ente_devedor/ente_devedor_list.html'
 
 
 def ente_devedor_em_lote_create(request):
@@ -88,12 +111,12 @@ def ente_devedor_em_lote_create(request):
                 return redirect("ente_devedor_menu_alias")
         else:
             form = CSVUploadForm()
-            return render(request, "precatory/ente_devedor_upload.html", {"form": form})
+            return render(request, "precatory/ente_devedor/ente_devedor_upload.html", {"form": form})
     except:
         data = {}
         data['msg'] = "Não foi possível carregar os dados"
         data['form'] = CSVUploadForm()
-        return render(request, "precatory/ente_devedor_upload.html", data)
+        return render(request, "precatory/ente_devedor/ente_devedor_upload.html", data)
 
 
 class ente_devedor_create(CreateView):
@@ -151,7 +174,7 @@ class unidade_menu(SingleTableView):
     table_class = unidade_table
     template_name_suffix = '_menu'
     table_pagination = {"per_page": 5}
-    template_name = 'precatory/unidade_list.html'
+    template_name = 'precatory/unidade/unidade_list.html'
 
 
 def unidade_em_lote_create(request):
@@ -169,12 +192,12 @@ def unidade_em_lote_create(request):
                 return redirect("unidade_menu_alias")
         else:
             form = CSVUploadForm()
-        return render(request, "precatory/unidade_upload.html", {"form": form})
+        return render(request, "precatory/unidade/unidade_upload.html", {"form": form})
     except:
         data = {}
         data['msg'] = "Não foi possível carregar os dados"
         data['form'] = CSVUploadForm()
-        return render(request, "precatory/unidade_upload.html", data)
+        return render(request, "precatory/unidade/unidade_upload.html", data)
 
 
 class unidade_create(CreateView):
@@ -232,7 +255,7 @@ class validacao_menu(SingleTableView):
     table_class = validacao_table
     template_name_suffix = '_menu'
     table_pagination = {"per_page": 5}
-    template_name = 'precatory/validacao_list.html'
+    template_name = 'precatory/validacao/validacao_list.html'
 
 
 def validacao_em_lote_create(request):
@@ -256,12 +279,12 @@ def validacao_em_lote_create(request):
                 return redirect("validacao_menu_alias")
         else:
             form = CSVUploadForm()
-        return render(request, "precatory/validacao_upload.html", {"form": form})
+        return render(request, "precatory/validacao/validacao_upload.html", {"form": form})
     except:
         data = {}
         data['msg'] = "Não foi possível carregar os dados"
         data['form'] = CSVUploadForm()
-        return render(request, "precatory/validacao_upload.html", data)
+        return render(request, "precatory/validacao/validacao_upload.html", data)
 
 
 class validacao_create(CreateView):
@@ -329,7 +352,7 @@ class autuacao_menu(SingleTableView):
     table_class = autuacao_table
     template_name_suffix = '_menu'
     table_pagination = {"per_page": 5}
-    template_name = 'precatory/autuacao_list.html'
+    template_name = 'precatory/autuacao/autuacao_list.html'
 
 
 def autuacao_em_lote_create(request):
@@ -355,12 +378,12 @@ def autuacao_em_lote_create(request):
                 return redirect("autuacao_menu_alias")
         else:
             form = CSVUploadForm()
-        return render(request, "precatory/autuacao_upload.html", {"form": form})
+        return render(request, "precatory/autuacao/autuacao_upload.html", {"form": form})
     except:
         data = {}
         data['msg'] = "Não foi possível carregar os dados"
         data['form'] = CSVUploadForm()
-        return render(request, "precatory/autuacao_upload.html", data)
+        return render(request, "precatory/autuacao/autuacao_upload.html", data)
 
 
 class autuacao_create(CreateView):
@@ -428,7 +451,7 @@ class baixa_menu(SingleTableView):
     table_class = baixa_table
     template_name_suffix = '_menu'
     table_pagination = {"per_page": 5}
-    template_name = 'precatory/baixa_list.html'
+    template_name = 'precatory/baixa/baixa_list.html'
 
 
 def baixa_em_lote_create(request):
@@ -455,13 +478,13 @@ def baixa_em_lote_create(request):
                 return redirect("baixa_menu_alias")
         else:
             form = CSVUploadForm()
-        return render(request, "precatory/baixa_upload.html", {"form": form})
+        return render(request, "precatory/baixa/baixa_upload.html", {"form": form})
 
     except:
         data = {}
         data['msg'] = "Não foi possível carregar os dados"
         data['form'] = CSVUploadForm()
-        return render(request, "precatory/baixa_upload.html", data)
+        return render(request, "precatory/baixa/baixa_upload.html", data)
 
 
 class baixa_create(CreateView):
@@ -527,3 +550,136 @@ def baixa_export_csv(request):
         writer.writerow(user)
 
     return response
+
+def train_validacao_model(request):
+    # Busca os dados do banco de dados
+    dados = validacao.objects.all().values(
+        'data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
+        'classificacao_da_doenca', 'ente_devedor', 'unidade',
+        'valor', 'data_da_validacao'
+    )
+    df = pd.DataFrame.from_records(dados)
+
+    # Pré-processamento dos dados
+    df['data_da_criacao'] = pd.to_datetime(df['data_da_criacao']).astype('int64') / 10 ** 9
+    df['data_de_nascimento'] = pd.to_datetime(df['data_de_nascimento']).astype('int64') / 10 ** 9
+    df['data_da_validacao'] = pd.to_datetime(df['data_da_validacao']).astype('int64') / 10 ** 9
+    df['tipo_de_pessoa'] = df['tipo_de_pessoa'].astype('category').cat.codes
+    df['classificacao_da_doenca'] = df['classificacao_da_doenca'].astype('category').cat.codes
+    df['ente_devedor'] = df['ente_devedor'].astype('category').cat.codes
+    df['unidade'] = df['unidade'].astype('category').cat.codes
+
+    # Removendo linhas com valores nulos na coluna target
+    df = df.dropna(subset=['data_da_validacao'])
+
+    # Separando features e target
+    X = df.drop('data_da_validacao', axis=1)
+    y = df['data_da_validacao']
+
+    # Treinando o modelo
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    modelo = RandomForestRegressor(n_estimators=100, random_state=42)
+    modelo.fit(X_train, y_train)
+
+    # Salvar modelo
+    model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_validacao_predicao.pkl')
+    joblib.dump(modelo, model_path)
+
+    return render(request, 'precatory/validacao/validacao_modelo_create.html', {'model_path': model_path})
+
+def download_validacao_model(request):
+    model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_validacao_predicao.pkl')
+    with open(model_path, 'rb') as f:
+        response = HttpResponse(f.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = 'attachment; filename="modelo_validacao_predicao.pkl"'
+        return response
+
+def train_autuacao_model(request):
+    # Busca os dados do banco de dados
+    dados = autuacao.objects.all().values(
+        'data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
+        'classificacao_da_doenca', 'ente_devedor', 'unidade',
+        'valor', 'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao'
+    )
+    df = pd.DataFrame.from_records(dados)
+
+    # Pré-processamento dos dados
+    df['data_da_criacao'] = pd.to_datetime(df['data_da_criacao']).astype('int64') / 10 ** 9
+    df['data_de_nascimento'] = pd.to_datetime(df['data_de_nascimento']).astype('int64') / 10 ** 9
+    df['data_da_validacao'] = pd.to_datetime(df['data_da_validacao']).astype('int64') / 10 ** 9
+    df['data_da_autuacao'] = pd.to_datetime(df['data_da_autuacao']).astype('int64') / 10 ** 9
+    df['tipo_de_pessoa'] = df['tipo_de_pessoa'].astype('category').cat.codes
+    df['classificacao_da_doenca'] = df['classificacao_da_doenca'].astype('category').cat.codes
+    df['ente_devedor'] = df['ente_devedor'].astype('category').cat.codes
+    df['unidade'] = df['unidade'].astype('category').cat.codes
+
+    # Removendo linhas com valores nulos na coluna target
+    df = df.dropna(subset=['data_da_autuacao'])
+
+    # Separando features e target
+    X = df.drop('data_da_autuacao', axis=1)
+    y = df['data_da_autuacao']
+
+    # Treinando o modelo
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    modelo = RandomForestRegressor(n_estimators=100, random_state=42)
+    modelo.fit(X_train, y_train)
+
+    # Salvar modelo
+    model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_autuacao_predicao.pkl')
+    joblib.dump(modelo, model_path)
+
+    return render(request, 'precatory/autuacao/autuacao_modelo_create.html', {'model_path': model_path})
+
+def download_autuacao_model(request):
+    model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_autuacao_predicao.pkl')
+    with open(model_path, 'rb') as f:
+        response = HttpResponse(f.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = 'attachment; filename="modelo_autuacao_predicao.pkl"'
+        return response
+
+def train_baixa_model(request):
+    # Busca os dados do banco de dados
+    dados = baixa.objects.all().values(
+        'data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
+        'classificacao_da_doenca', 'ente_devedor', 'unidade',
+        'valor', 'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao',
+        'data_da_baixa'
+    )
+    df = pd.DataFrame.from_records(dados)
+
+    # Pré-processamento dos dados
+    df['data_da_criacao'] = pd.to_datetime(df['data_da_criacao']).astype('int64') / 10 ** 9
+    df['data_de_nascimento'] = pd.to_datetime(df['data_de_nascimento']).astype('int64') / 10 ** 9
+    df['data_da_validacao'] = pd.to_datetime(df['data_da_validacao']).astype('int64') / 10 ** 9
+    df['data_da_autuacao'] = pd.to_datetime(df['data_da_autuacao']).astype('int64') / 10 ** 9
+    df['data_da_baixa'] = pd.to_datetime(df['data_da_baixa']).astype('int64') / 10 ** 9
+    df['tipo_de_pessoa'] = df['tipo_de_pessoa'].astype('category').cat.codes
+    df['classificacao_da_doenca'] = df['classificacao_da_doenca'].astype('category').cat.codes
+    df['ente_devedor'] = df['ente_devedor'].astype('category').cat.codes
+    df['unidade'] = df['unidade'].astype('category').cat.codes
+
+    # Removendo linhas com valores nulos na coluna target
+    df = df.dropna(subset=['data_da_baixa'])
+
+    # Separando features e target
+    X = df.drop('data_da_baixa', axis=1)
+    y = df['data_da_baixa']
+
+    # Treinando o modelo
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    modelo = RandomForestRegressor(n_estimators=100, random_state=42)
+    modelo.fit(X_train, y_train)
+
+    # Salvar modelo
+    model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_baixa_predicao.pkl')
+    joblib.dump(modelo, model_path)
+
+    return render(request, 'precatory/baixa/baixa_modelo_create.html', {'model_path': model_path})
+
+def download_baixa_model(request):
+    model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_baixa_predicao.pkl')
+    with open(model_path, 'rb') as f:
+        response = HttpResponse(f.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = 'attachment; filename="modelo_baixa_predicao.pkl"'
+        return response

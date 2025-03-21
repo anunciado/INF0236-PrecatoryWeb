@@ -10,8 +10,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lista de Baixas</title>
-    <link href="css/styles.css" rel="stylesheet">
+    <title>Lista de Autuações</title>
+    <link href="../../../static/css/styles.css" rel="stylesheet">
 </head>
 <body>
     <div class="container mt-4">
@@ -28,14 +28,14 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="{% url 'baixa_create_alias' %}" class="btn btn-primary">
-                Incluir novas baixas
+            <a href="{% url 'autuacao_create_alias' %}" class="btn btn-primary">
+                Incluir novos autuações
             </a>
-            <a href="{% url 'baixa_em_lote_create_alias' %}" class="btn btn-secondary">
-                Incluir novas baixas em lote
+            <a href="{% url 'autuacao_em_lote_create_alias' %}" class="btn btn-secondary">
+                Incluir novos autuações em lote
             </a>
-            <a href="{% url 'baixa_export_csv' %}" class="btn btn-success">
-                Exportar todas as baixas
+            <a href="{% url 'autuacao_export_csv' %}" class="btn btn-success">
+                Exportar todos os autuações
             </a>
         </div>
     </div>
