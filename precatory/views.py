@@ -26,6 +26,7 @@ from .tables import autuacao_table
 from .models import validacao
 from .tables import validacao_table
 
+
 def index(request):
     usuario = request.POST.get('username')
     senha = request.POST.get('password')
@@ -39,8 +40,10 @@ def index(request):
             data['msg'] = "Usuário ou Senha Incorretos " + usuario
         return render(request, 'index.html', data)
 
+
 def home(request):
     return render(request, 'home.html')
+
 
 def grafico(request):
     exame_tmp = exame.objects.all()
@@ -61,12 +64,14 @@ def grafico(request):
     dicionario['grafico'] = plot_div
     return render(request, 'grafico.html', dicionario)
 
+
 class ente_devedor_menu(SingleTableView):
     model = ente_devedor
     table_class = ente_devedor_table
     template_name_suffix = '_menu'
     table_pagination = {"per_page": 5}
     template_name = 'precatory/ente_devedor_list.html'
+
 
 def ente_devedor_em_lote_create(request):
     try:
@@ -89,6 +94,7 @@ def ente_devedor_em_lote_create(request):
         data['msg'] = "Não foi possível carregar os dados"
         data['form'] = CSVUploadForm()
         return render(request, "precatory/ente_devedor_upload.html", data)
+
 
 class ente_devedor_create(CreateView):
     model = ente_devedor
@@ -125,18 +131,20 @@ class ente_devedor_delete(DeleteView):
     def get_success_url(self):
         return reverse_lazy('ente_devedor_menu_alias')
 
+
 def ente_devedor_export_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="entesDevedores.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['nome','uuid', 'ativo'])
+    writer.writerow(['nome', 'uuid', 'ativo'])
 
-    users = ente_devedor.objects.all().values_list('nome','uuid', 'ativo')
+    users = ente_devedor.objects.all().values_list('nome', 'uuid', 'ativo')
     for user in users:
         writer.writerow(user)
 
     return response
+
 
 class unidade_menu(SingleTableView):
     model = unidade
@@ -144,6 +152,7 @@ class unidade_menu(SingleTableView):
     template_name_suffix = '_menu'
     table_pagination = {"per_page": 5}
     template_name = 'precatory/unidade_list.html'
+
 
 def unidade_em_lote_create(request):
     try:
@@ -166,6 +175,7 @@ def unidade_em_lote_create(request):
         data['msg'] = "Não foi possível carregar os dados"
         data['form'] = CSVUploadForm()
         return render(request, "precatory/unidade_upload.html", data)
+
 
 class unidade_create(CreateView):
     model = unidade
@@ -202,18 +212,20 @@ class unidade_delete(DeleteView):
     def get_success_url(self):
         return reverse_lazy('unidade_menu_alias')
 
+
 def unidade_export_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="unidades.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['nome','rhid', 'ativo'])
+    writer.writerow(['nome', 'rhid', 'ativo'])
 
-    users = unidade.objects.all().values_list('nome','rhid', 'ativo')
+    users = unidade.objects.all().values_list('nome', 'rhid', 'ativo')
     for user in users:
         writer.writerow(user)
 
     return response
+
 
 class validacao_menu(SingleTableView):
     model = validacao
@@ -221,6 +233,7 @@ class validacao_menu(SingleTableView):
     template_name_suffix = '_menu'
     table_pagination = {"per_page": 5}
     template_name = 'precatory/validacao_list.html'
+
 
 def validacao_em_lote_create(request):
     try:
@@ -250,11 +263,12 @@ def validacao_em_lote_create(request):
         data['form'] = CSVUploadForm()
         return render(request, "precatory/validacao_upload.html", data)
 
+
 class validacao_create(CreateView):
     model = validacao
     fields = ['data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ativo']
+              'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+              'data_da_validacao', 'ativo']
 
     def get_success_url(self):
         return reverse_lazy('validacao_menu_alias')
@@ -274,8 +288,8 @@ class validacao_list(ListView):
 class validacao_update(UpdateView):
     model = validacao
     fields = ['data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ativo']
+              'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+              'data_da_validacao', 'ativo']
 
     def get_success_url(self):
         return reverse_lazy('validacao_menu_alias')
@@ -284,12 +298,13 @@ class validacao_update(UpdateView):
 class validacao_delete(DeleteView):
     model = validacao
     fields = ['data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ativo']
+              'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+              'data_da_validacao', 'ativo']
     template_name_suffix = '_delete'
 
     def get_success_url(self):
         return reverse_lazy('validacao_menu_alias')
+
 
 def validacao_export_csv(request):
     response = HttpResponse(content_type='text/csv')
@@ -297,16 +312,17 @@ def validacao_export_csv(request):
 
     writer = csv.writer(response)
     writer.writerow(['data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ativo'])
+                     'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+                     'data_da_validacao', 'ativo'])
 
     users = validacao.objects.all().values_list('data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ativo')
+                                                'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+                                                'data_da_validacao', 'ativo')
     for user in users:
         writer.writerow(user)
 
     return response
+
 
 class autuacao_menu(SingleTableView):
     model = autuacao
@@ -314,6 +330,7 @@ class autuacao_menu(SingleTableView):
     template_name_suffix = '_menu'
     table_pagination = {"per_page": 5}
     template_name = 'precatory/autuacao_list.html'
+
 
 def autuacao_em_lote_create(request):
     try:
@@ -345,11 +362,12 @@ def autuacao_em_lote_create(request):
         data['form'] = CSVUploadForm()
         return render(request, "precatory/autuacao_upload.html", data)
 
+
 class autuacao_create(CreateView):
     model = autuacao
     fields = ['data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao','ativo']
+              'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+              'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao', 'ativo']
 
     def get_success_url(self):
         return reverse_lazy('autuacao_menu_alias')
@@ -369,8 +387,8 @@ class autuacao_list(ListView):
 class autuacao_update(UpdateView):
     model = autuacao
     fields = ['data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao','ativo']
+              'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+              'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao', 'ativo']
 
     def get_success_url(self):
         return reverse_lazy('autuacao_menu_alias')
@@ -379,12 +397,13 @@ class autuacao_update(UpdateView):
 class autuacao_delete(DeleteView):
     model = autuacao
     fields = ['data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao','ativo']
+              'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+              'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao', 'ativo']
     template_name_suffix = '_delete'
 
     def get_success_url(self):
         return reverse_lazy('autuacao_menu_alias')
+
 
 def autuacao_export_csv(request):
     response = HttpResponse(content_type='text/csv')
@@ -392,16 +411,17 @@ def autuacao_export_csv(request):
 
     writer = csv.writer(response)
     writer.writerow(['data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao','ativo'])
+                     'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+                     'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao', 'ativo'])
 
     users = autuacao.objects.all().values_list('data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao','ativo')
+                                               'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+                                               'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao', 'ativo')
     for user in users:
         writer.writerow(user)
 
     return response
+
 
 class baixa_menu(SingleTableView):
     model = baixa
@@ -409,6 +429,7 @@ class baixa_menu(SingleTableView):
     template_name_suffix = '_menu'
     table_pagination = {"per_page": 5}
     template_name = 'precatory/baixa_list.html'
+
 
 def baixa_em_lote_create(request):
     try:
@@ -442,12 +463,13 @@ def baixa_em_lote_create(request):
         data['form'] = CSVUploadForm()
         return render(request, "precatory/baixa_upload.html", data)
 
+
 class baixa_create(CreateView):
     model = baixa
     fields = ['data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao',
-                                            'data_da_baixa','ativo']
+              'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+              'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao',
+              'data_da_baixa', 'ativo']
 
     def get_success_url(self):
         return reverse_lazy('baixa_menu_alias')
@@ -467,9 +489,9 @@ class baixa_list(ListView):
 class baixa_update(UpdateView):
     model = baixa
     fields = ['data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao',
-                                            'data_da_baixa','ativo']
+              'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+              'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao',
+              'data_da_baixa', 'ativo']
 
     def get_success_url(self):
         return reverse_lazy('baixa_menu_alias')
@@ -478,13 +500,14 @@ class baixa_update(UpdateView):
 class baixa_delete(DeleteView):
     model = baixa
     fields = ['data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao',
-                                            'data_da_baixa','ativo']
+              'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+              'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao',
+              'data_da_baixa', 'ativo']
     template_name_suffix = '_delete'
 
     def get_success_url(self):
         return reverse_lazy('baixa_menu_alias')
+
 
 def baixa_export_csv(request):
     response = HttpResponse(content_type='text/csv')
@@ -492,14 +515,14 @@ def baixa_export_csv(request):
 
     writer = csv.writer(response)
     writer.writerow(['data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
-                                            'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
-                                            'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao',
-                                            'data_da_baixa','ativo'])
+                     'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
+                     'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao',
+                     'data_da_baixa', 'ativo'])
 
     users = baixa.objects.all().values_list('data_da_criacao', 'tipo_de_pessoa', 'data_de_nascimento',
                                             'classificacao_da_doenca', 'ente_devedor', 'unidade', 'valor',
                                             'data_da_validacao', 'ano_de_orcamento', 'data_da_autuacao',
-                                            'data_da_baixa','ativo')
+                                            'data_da_baixa', 'ativo')
     for user in users:
         writer.writerow(user)
 
