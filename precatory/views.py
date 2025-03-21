@@ -1,38 +1,36 @@
-from django.contrib.auth import authenticate, login
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.views.generic import ListView
-from django.views.generic.edit import UpdateView
-from django.views.generic.edit import DeleteView
-from django_tables2 import SingleTableView
-import plotly.graph_objs as go
-from plotly.offline import plot
-import os
-from django.core.files.storage import FileSystemStorage
-from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView
-from django.shortcuts import redirect
-from .models import ente_devedor
-from .tables import ente_devedor_table
-from .models import unidade
-from .tables import unidade_table
 import csv
-from django.shortcuts import render, redirect
-from .forms import CSVUploadForm
-from .models import baixa
-from .tables import baixa_table
-from .models import autuacao
-from .tables import autuacao_table
-from .models import validacao
-from .tables import validacao_table
 import os
+
 import joblib
 import pandas as pd
-from django.shortcuts import render
-from django.http import HttpResponse
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
+import plotly.graph_objs as go
+import plotly.offline as pyo
 from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import ListView
+from django.views.generic.edit import CreateView
+from django.views.generic.edit import DeleteView
+from django.views.generic.edit import UpdateView
+from django_tables2 import SingleTableView
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+
+from .forms import CSVUploadForm
+from .models import autuacao
+from .models import baixa
+from .models import ente_devedor
+from .models import unidade
+from .models import validacao
+from .tables import autuacao_table
+from .tables import baixa_table
+from .tables import ente_devedor_table
+from .tables import unidade_table
+from .tables import validacao_table
 
 
 def index(request):
@@ -67,25 +65,6 @@ def autuacao_modelo_create(request):
 
 def baixa_modelo_create(request):
     return render(request, 'precatory/baixa/baixa_modelo_create.html')
-
-def grafico(request):
-    exame_tmp = exame.objects.all()
-    eixo_x = []
-    eixo_y = []
-    i = 0
-    for e in exame_tmp:
-        i += 1
-        eixo_x.append(i)
-        eixo_y.append(e.valor)
-    figura = go.Figure()
-    figura.add_trace(go.Scatter(x=eixo_x, y=eixo_y, mode='lines',
-                                line_color='rgb(0, 0, 255)'))
-    figura.update_layout(title="Dados de Exame", title_x=0.5,
-                         xaxis_title='Tempo', yaxis_title='Batimento Cardíaco')
-    plot_div = plot(figura, output_type='div')
-    dicionario = {}
-    dicionario['grafico'] = plot_div
-    return render(request, 'grafico.html', dicionario)
 
 
 class ente_devedor_menu(SingleTableView):
@@ -551,6 +530,7 @@ def baixa_export_csv(request):
 
     return response
 
+
 def train_validacao_model(request):
     # Busca os dados do banco de dados
     dados = validacao.objects.all().values(
@@ -587,12 +567,14 @@ def train_validacao_model(request):
 
     return render(request, 'precatory/validacao/validacao_modelo_create.html', {'model_path': model_path})
 
+
 def download_validacao_model(request):
     model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_validacao_predicao.pkl')
     with open(model_path, 'rb') as f:
         response = HttpResponse(f.read(), content_type='application/octet-stream')
         response['Content-Disposition'] = 'attachment; filename="modelo_validacao_predicao.pkl"'
         return response
+
 
 def train_autuacao_model(request):
     # Busca os dados do banco de dados
@@ -631,12 +613,14 @@ def train_autuacao_model(request):
 
     return render(request, 'precatory/autuacao/autuacao_modelo_create.html', {'model_path': model_path})
 
+
 def download_autuacao_model(request):
     model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_autuacao_predicao.pkl')
     with open(model_path, 'rb') as f:
         response = HttpResponse(f.read(), content_type='application/octet-stream')
         response['Content-Disposition'] = 'attachment; filename="modelo_autuacao_predicao.pkl"'
         return response
+
 
 def train_baixa_model(request):
     # Busca os dados do banco de dados
@@ -675,7 +659,67 @@ def train_baixa_model(request):
     model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_baixa_predicao.pkl')
     joblib.dump(modelo, model_path)
 
-    return render(request, 'precatory/baixa/baixa_modelo_create.html', {'model_path': model_path})
+    # Calculando métricas de desempenho
+    y_pred = modelo.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+
+    # Convertendo os valores numéricos de volta para datas
+    y_test_dates = pd.to_datetime(y_test * 10 ** 9)  # Convertendo de segundos para datetime
+    y_pred_dates = pd.to_datetime(y_pred * 10 ** 9)  # Convertendo de segundos para datetime
+
+    # Gerando gráficos com Plotly
+    # Gráfico de Linha (Valores Reais vs. Preditos)
+    line_real = go.Scatter(
+        x=y_test_dates,
+        y=y_test_dates,
+        mode='lines',
+        name='Valores Reais',
+        line=dict(color='blue')
+    )
+    line_pred = go.Scatter(
+        x=y_test_dates,
+        y=y_pred_dates,
+        mode='lines+markers',
+        name='Valores Preditos',
+        line=dict(color='red', dash='dash')
+    )
+    layout = go.Layout(
+        title='Valores Reais vs. Valores Preditos (Datas)',
+        xaxis=dict(title='Data Real'),
+        yaxis=dict(title='Data Predita'),
+        showlegend=True
+    )
+    fig = go.Figure(data=[line_real, line_pred], layout=layout)
+    line_plot_html = pyo.plot(fig, output_type='div', include_plotlyjs=False)
+
+    # Gráfico de Resíduos (Diferença entre Datas)
+    residuos = (y_test_dates - y_pred_dates).dt.days  # Diferença em dias
+    residuos_plot = go.Scatter(
+        x=y_test_dates,
+        y=residuos,
+        mode='markers',
+        name='Resíduos (Dias)',
+        marker=dict(color='green')
+    )
+    layout_residuos = go.Layout(
+        title='Gráfico de Resíduos (Diferença em Dias)',
+        xaxis=dict(title='Data Real'),
+        yaxis=dict(title='Resíduos (Dias)'),
+        showlegend=True
+    )
+    fig_residuos = go.Figure(data=[residuos_plot], layout=layout_residuos)
+    residuos_plot_html = pyo.plot(fig_residuos, output_type='div', include_plotlyjs=False)
+
+    # Renderizando a página com as métricas e gráficos
+    return render(request, 'precatory/baixa/baixa_modelo_create.html', {
+        'mse': mse,
+        'r2': r2,
+        'line_plot_html': line_plot_html,
+        'residuos_plot_html': residuos_plot_html,
+        'model_path': model_path
+    })
+
 
 def download_baixa_model(request):
     model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_baixa_predicao.pkl')

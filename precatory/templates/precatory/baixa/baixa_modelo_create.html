@@ -9,6 +9,7 @@
     {% bootstrap_css %}
     {% bootstrap_javascript %}
     <link href="../../../static/css/styles.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
 
@@ -26,9 +27,29 @@
                             <button type="submit" class="btn btn-info btn-lg">Treinar Modelo</button>
                             <a href="{% url 'ia_menu_alias' %}" class="btn btn-success btn-lg">Voltar</a>
                             {% if model_path %}
-                                <div class="alert alert-warning mt-3">
-                                    <p>Modelo treinado com sucesso!</p>
-                                    <a href="{% url 'download_baixa_model' %}">Baixar Modelo</a></div>
+                                <div class="alert alert-success mt-3">
+                                    <h2>Modelo treinado com sucesso!</h2>
+                                    <a href="{% url 'download_baixa_model' %}">Baixar Modelo</a>
+                                </div>
+                                <div class="alert alert-info mt-3">
+                                    <h3>Desempenho do Modelo</h3>
+
+                                    <h4>Métricas de Desempenho</h4>
+                                    <ul>
+                                        <li><strong>MSE (Mean Squared Error):</strong> {{ mse }}</li>
+                                        <li><strong>R² (Coeficiente de Determinação):</strong> {{ r2 }}</li>
+                                    </ul>
+
+                                    <h4>Gráfico de Linha (Valores Reais vs. Preditos)</h4>
+                                    <div id="line-plot">
+                                        {{ line_plot_html|safe }}
+                                    </div>
+
+                                    <h4>Gráfico de Resíduos</h4>
+                                    <div id="residuos-plot">
+                                        {{ residuos_plot_html|safe }}
+                                    </div>
+                                </div>
                             {% endif %}
                         </div>
                     </form>
