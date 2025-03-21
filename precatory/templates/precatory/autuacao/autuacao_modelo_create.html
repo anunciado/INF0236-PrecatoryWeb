@@ -9,6 +9,7 @@
     {% bootstrap_css %}
     {% bootstrap_javascript %}
     <link href="../../../static/css/styles.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
 
@@ -26,9 +27,24 @@
                             <button type="submit" class="btn btn-info btn-lg">Treinar Modelo</button>
                             <a href="{% url 'ia_menu_alias' %}" class="btn btn-success btn-lg">Voltar</a>
                             {% if model_path %}
-                                <div class="alert alert-warning mt-3">
-                                    <p>Modelo treinado com sucesso!</p>
-                                    <a href="{% url 'download_autuacao_model' %}">Baixar Modelo</a></div>
+                                <div class="alert alert-success mt-3">
+                                    <h2>Modelo treinado com sucesso!</h2>
+                                    <a href="{% url 'download_autuacao_model' %}">Baixar Modelo</a>
+                                </div>
+                                <div class="alert alert-info mt-3">
+                                    <h2>Desempenho do Modelo</h2>
+                                    <h5>Métricas de Desempenho</h5>
+                                    <p><strong>MAE (Erro Absoluto Médio):</strong> {{ mae|floatformat:2 }}</p>
+                                    <p><strong>MSE (Erro Quadrático Médio):</strong> {{ mse|floatformat:2 }}</p>
+                                    <p><strong>RMSE (Raiz do Erro Quadrático Médio):</strong> {{ rmse|floatformat:2 }}
+                                    </p>
+                                    <p><strong>R² (Coeficiente de Determinação):</strong> {{ r2|floatformat:2 }} </p>
+
+                                    <h5>Gráfico de Linha (Datas Reais vs. Preditas)</h5>
+                                    <div id="line-plot">
+                                        {{ line_plot_html|safe }}
+                                    </div>
+                                </div>
                             {% endif %}
                         </div>
                     </form>

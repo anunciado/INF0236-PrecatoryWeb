@@ -18,7 +18,7 @@ from django.views.generic.edit import UpdateView
 from django_tables2 import SingleTableView
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import numpy as np
 
@@ -560,14 +560,91 @@ def train_validacao_model(request):
 
     # Treinando o modelo
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    modelo = RandomForestRegressor(n_estimators=100, random_state=42)
-    modelo.fit(X_train, y_train)
+    # Dicionário para armazenar os resultados dos modelos
+    # Definindo o espaço de hiperparâmetros
+    param_grid = {
+        'n_estimators': [50, 100, 200, 300],
+        'max_depth': [None, 10, 20, 30, 50],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4],
+        'max_features': ['auto', 'sqrt', 'log2'],
+        'bootstrap': [True, False]
+    }
 
-    # Salvar modelo
+    # Criando o modelo RandomForestRegressor
+    rf = RandomForestRegressor(random_state=42)
+
+    # Usando GridSearchCV para buscar os melhores hiperparâmetros
+    grid_search = GridSearchCV(
+        estimator=rf,
+        param_grid=param_grid,
+        cv=3,  # 3-fold cross-validation
+        scoring='neg_mean_squared_error',  # Métrica de avaliação
+        n_jobs=-1,  # Usar todos os núcleos do processador
+        verbose=2  # Mostrar logs durante a execução
+    )
+
+    # Treinando o modelo com GridSearchCV
+    grid_search.fit(X_train, y_train)
+
+    # Melhores parâmetros encontrados
+    melhores_parametros = grid_search.best_params_
+
+    # Melhor modelo
+    melhor_modelo = grid_search.best_estimator_
+
+    # Fazendo previsões com o melhor modelo
+    y_pred = melhor_modelo.predict(X_test)
+
+    # Calculando métricas de desempenho
+    mae = mean_absolute_error(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    rmse = np.sqrt(mse)
+    r2 = r2_score(y_test, y_pred)
+
+    # Salvando o melhor modelo
     model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_validacao_predicao.pkl')
-    joblib.dump(modelo, model_path)
+    joblib.dump(melhor_modelo, model_path)
 
-    return render(request, 'precatory/validacao/validacao_modelo_create.html', {'model_path': model_path})
+    # Convertendo os valores numéricos de volta para datas
+    y_test_dates = pd.to_datetime(y_test * 10 ** 9)  # Convertendo de segundos para datetime
+    y_pred_dates = pd.to_datetime(y_pred * 10 ** 9)  # Convertendo de segundos para datetime
+
+    # Gerando gráficos com Plotly
+    # Gráfico de Linha (Valores Reais vs. Preditos)
+    line_real = go.Scatter(
+        x=y_test_dates,
+        y=y_test_dates,
+        mode='lines',
+        name='Valores Reais',
+        line=dict(color='blue')
+    )
+    line_pred = go.Scatter(
+        x=y_test_dates,
+        y=y_pred_dates,
+        mode='lines+markers',
+        name='Valores Preditos',
+        line=dict(color='red', dash='dash')
+    )
+    layout = go.Layout(
+        title='Valores Reais vs. Valores Preditos (Datas)',
+        xaxis=dict(title='Data Real'),
+        yaxis=dict(title='Data Predita'),
+        showlegend=True
+    )
+    fig = go.Figure(data=[line_real, line_pred], layout=layout)
+    line_plot_html = pyo.plot(fig, output_type='div', include_plotlyjs=False)
+
+    # Renderizando a página com os resultados
+    return render(request, 'precatory/validacao/validacao_modelo_create.html', {
+        'melhores_parametros': melhores_parametros,
+        'mae': mae,
+        'mse': mse,
+        'rmse': rmse,
+        'r2': r2,
+        'line_plot_html': line_plot_html,
+        'model_path': model_path
+    })
 
 
 def download_validacao_model(request):
@@ -604,17 +681,74 @@ def train_autuacao_model(request):
     X = df.drop('data_da_autuacao', axis=1)
     y = df['data_da_autuacao']
 
-    # Treinando o modelo
+    # Dividindo os dados em treino e teste
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    modelo = RandomForestRegressor(n_estimators=100, random_state=42)
+
+    # Configurando o RandomForestRegressor com os melhores parâmetros
+    modelo = RandomForestRegressor(
+        bootstrap=False,
+        max_depth=20,
+        max_features='sqrt',
+        min_samples_leaf=2,
+        min_samples_split=10,
+        n_estimators=200,
+        random_state=42
+    )
+
+    # Treinando o modelo
     modelo.fit(X_train, y_train)
 
     # Salvar modelo
     model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_autuacao_predicao.pkl')
     joblib.dump(modelo, model_path)
 
-    return render(request, 'precatory/autuacao/autuacao_modelo_create.html', {'model_path': model_path})
+    # Fazendo previsões com o melhor modelo
+    y_pred = modelo.predict(X_test)
 
+    # Calculando métricas de desempenho
+    mae = mean_absolute_error(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    rmse = np.sqrt(mse)
+    r2 = r2_score(y_test, y_pred)
+
+    # Convertendo os valores numéricos de volta para datas
+    y_test_dates = pd.to_datetime(y_test * 10 ** 9)  # Convertendo de segundos para datetime
+    y_pred_dates = pd.to_datetime(modelo.predict(X_test) * 10 ** 9)  # Usando o melhor modelo
+
+    # Gerando gráficos com Plotly
+    # Gráfico de Linha (Valores Reais vs. Preditos)
+    line_real = go.Scatter(
+        x=y_test_dates,
+        y=y_test_dates,
+        mode='lines',
+        name='Datas Reais',
+        line=dict(color='blue')
+    )
+    line_pred = go.Scatter(
+        x=y_test_dates,
+        y=y_pred_dates,
+        mode='lines+markers',
+        name='Datas Preditas',
+        line=dict(color='red', dash='dash')
+    )
+    layout = go.Layout(
+        title='Datas Reais vs. Datas Preditas',
+        xaxis=dict(title='Data Real'),
+        yaxis=dict(title='Data Predita'),
+        showlegend=True
+    )
+    fig = go.Figure(data=[line_real, line_pred], layout=layout)
+    line_plot_html = pyo.plot(fig, output_type='div', include_plotlyjs=False)
+
+    # Renderizando a página com os resultados
+    return render(request, 'precatory/autuacao/autuacao_modelo_create.html', {
+        'mae': mae,
+        'mse': mse,
+        'rmse': rmse,
+        'r2': r2,
+        'line_plot_html': line_plot_html,
+        'model_path': model_path
+    })
 
 def download_autuacao_model(request):
     model_path = os.path.join(settings.MEDIA_ROOT, 'modelo_autuacao_predicao.pkl')
