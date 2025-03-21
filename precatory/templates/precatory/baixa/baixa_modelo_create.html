@@ -32,25 +32,26 @@
                                     <a href="{% url 'download_baixa_model' %}">Baixar Modelo</a>
                                 </div>
                                 <div class="alert alert-info mt-3">
-                                <h2>Desempenho do Modelo</h2>
-                                <h5>Métricas de Desempenho</h5>
-                                <p><strong>MAE (Erro Absoluto Médio):</strong> {{ mae|floatformat:2 }}</p>
-                                <p><strong>MSE (Erro Quadrático Médio):</strong> {{ mse|floatformat:2 }}</p>
-                                <p><strong>RMSE (Raiz do Erro Quadrático Médio):</strong> {{ rmse|floatformat:2 }}</p>
-                                <p><strong>R² (Coeficiente de Determinação):</strong> {{ r2|floatformat:2 }} </p>
+                                    <h2>Desempenho do Modelo</h2>
+                                    <h5>Métricas de Desempenho</h5>
+                                    <p><strong>MAE (Erro Absoluto Médio):</strong> {{ mae|floatformat:2 }}</p>
+                                    <p><strong>MSE (Erro Quadrático Médio):</strong> {{ mse|floatformat:2 }}</p>
+                                    <p><strong>RMSE (Raiz do Erro Quadrático Médio):</strong> {{ rmse|floatformat:2 }}
+                                    </p>
+                                    <p><strong>R² (Coeficiente de Determinação):</strong> {{ r2|floatformat:2 }} </p>
 
-                                <h5>Gráfico de Linha (Datas Reais vs. Preditas)</h5>
-                                <div id="line-plot">
-                                    {{ line_plot_html|safe }}
-                                </div>
+                                    <h5>Gráfico de Linha (Datas Reais vs. Preditas)</h5>
+                                    <div id="line-plot">
+                                        {{ line_plot_html|safe }}
+                                    </div>
                                 </div>
                             {% endif %}
-                            </div>
-                            </form>
-                            </div>
-                            </div>
-                            </div>
-                            </div>
-                            </div>
-                            </body>
-                            </html>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
