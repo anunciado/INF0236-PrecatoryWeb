@@ -47,5 +47,5 @@ urlpatterns = [
     path('baixa_modelo_create/', views.baixa_modelo_create, name='baixa_modelo_create_alias'),
     path('train_baixa_model/', views.train_baixa_model, name='train_baixa_model'),
     path('download_baixa_model/', views.download_baixa_model, name='download_baixa_model'),
-    path('predicao/', views.index, name='predicao_alias'),
+    path('predicao_data_baixa/', views.predicao_data_baixa, name='predicao_data_baixa'),
 ]

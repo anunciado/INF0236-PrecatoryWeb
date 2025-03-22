@@ -20,6 +20,7 @@ from django_tables2 import SingleTableView
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
+from datetime import datetime
 
 from .forms import CSVUploadForm
 from .models import autuacao
@@ -840,3 +841,80 @@ def download_baixa_model(request):
         response = HttpResponse(f.read(), content_type='application/octet-stream')
         response['Content-Disposition'] = 'attachment; filename="modelo_baixa_predicao.pkl"'
         return response
+
+
+def predicao_data_baixa(request):
+    # Carregar os registros de ente_devedor e unidade
+    entes_devedores = ente_devedor.objects.filter(ativo=True).order_by('nome')
+    unidades = unidade.objects.filter(ativo=True).order_by('nome')
+
+    if request.method == 'POST':
+        # Carregar os modelos treinados
+        caminho_modelo_validacao = os.path.join(settings.MEDIA_ROOT, 'modelo_validacao_predicao.pkl')
+        if not os.path.exists(caminho_modelo_validacao):
+            return HttpResponse("Modelo de validação não encontrado. Treine o modelo primeiro.", status=404)
+        modelo_validacao = joblib.load(caminho_modelo_validacao)
+
+        caminho_autuacao_baixa = os.path.join(settings.MEDIA_ROOT, 'modelo_autuacao_predicao.pkl')
+        if not os.path.exists(caminho_autuacao_baixa):
+            return HttpResponse("Modelo de autuação não encontrado. Treine o modelo primeiro.", status=404)
+        modelo_autuacao = joblib.load(caminho_autuacao_baixa)
+
+        caminho_modelo_baixa = os.path.join(settings.MEDIA_ROOT, 'modelo_baixa_predicao.pkl')
+        if not os.path.exists(caminho_modelo_baixa):
+            return HttpResponse("Modelo de baixa não encontrado. Treine o modelo primeiro.", status=404)
+        modelo_baixa = joblib.load(caminho_modelo_baixa)
+
+        # Coletar os dados do formulário
+        dados_formulario = {
+            'data_da_criacao': pd.to_datetime(request.POST['data_da_criacao']).timestamp(),
+            'tipo_de_pessoa': request.POST['tipo_de_pessoa'],
+            'data_de_nascimento': pd.to_datetime(request.POST['data_de_nascimento']).timestamp(),
+            'classificacao_da_doenca': request.POST['classificacao_da_doenca'],
+            'ente_devedor': int(request.POST['ente_devedor_id']),  # Usar o nome correto da feature
+            'unidade': int(request.POST['unidade_id']),  # Usar o nome correto da feature
+            'valor': float(request.POST['valor'])
+        }
+
+        # Fazer a predição da data de validação
+        df = create_df(dados_formulario)
+        predicao_timestamp = modelo_validacao.predict(df)[0]
+        data_da_validacao = datetime.fromtimestamp(predicao_timestamp)
+
+        # Fazer a predição da data de autuação
+        dados_formulario['data_da_validacao'] = data_da_validacao.strftime('%Y-%m-%d')
+        dados_formulario['ano_de_orcamento'] = data_da_validacao.year
+        df = create_df(dados_formulario)
+        predicao_timestamp = modelo_autuacao.predict(df)[0]
+        data_da_autuacao = datetime.fromtimestamp(predicao_timestamp)
+
+        # Fazer a predição da data de baixa
+        dados_formulario['data_da_autuacao'] = data_da_autuacao.strftime('%Y-%m-%d')
+        df = create_df(dados_formulario)
+        predicao_timestamp = modelo_baixa.predict(df)[0]
+        predicao_data_baixa = datetime.fromtimestamp(predicao_timestamp).strftime('%Y-%m-%d')
+
+        # Renderizar a página com o resultado
+        return render(request, 'precatory/resultado_predicao.html', {
+            'predicao_data': predicao_data_baixa
+        })
+
+    # Renderizar o formulário com os registros carregados
+    return render(request, 'precatory/predicao_data_baixa.html', {
+        'entes_devedores': entes_devedores,
+        'unidades': unidades,
+    })
+
+def create_df(dados_formulario):
+    # Criar um DataFrame com os dados do formulário
+    df = pd.DataFrame([dados_formulario])
+    # Aplicar o mesmo pré-processamento usado no treinamento
+    df['data_da_criacao'] = pd.to_datetime(df['data_da_criacao']).astype('int64') / 10 ** 9
+    df['data_de_nascimento'] = pd.to_datetime(df['data_de_nascimento']).astype('int64') / 10 ** 9
+    if 'data_da_validacao' in df.columns: df['data_da_validacao'] = pd.to_datetime(df['data_da_validacao']).astype('int64') / 10 ** 9
+    if 'data_da_autuacao' in df.columns: df['data_da_autuacao'] = pd.to_datetime(df['data_da_autuacao']).astype('int64') / 10 ** 9
+    df['tipo_de_pessoa'] = df['tipo_de_pessoa'].astype('category').cat.codes
+    df['classificacao_da_doenca'] = df['classificacao_da_doenca'].astype('category').cat.codes
+    df['ente_devedor'] = df['ente_devedor'].astype('category').cat.codes
+    df['unidade'] = df['unidade'].astype('category').cat.codes
+    return df
