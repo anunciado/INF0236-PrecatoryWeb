@@ -548,8 +548,6 @@ def train_validacao_model(request):
     df['data_da_validacao'] = pd.to_datetime(df['data_da_validacao']).astype('int64') / 10 ** 9
     df['tipo_de_pessoa'] = df['tipo_de_pessoa'].astype('category').cat.codes
     df['classificacao_da_doenca'] = df['classificacao_da_doenca'].astype('category').cat.codes
-    df['ente_devedor'] = df['ente_devedor'].astype('category').cat.codes
-    df['unidade'] = df['unidade'].astype('category').cat.codes
 
     # Removendo linhas com valores nulos na coluna target
     df = df.dropna(subset=['data_da_validacao'])
@@ -651,8 +649,6 @@ def train_autuacao_model(request):
     df['data_da_autuacao'] = pd.to_datetime(df['data_da_autuacao']).astype('int64') / 10 ** 9
     df['tipo_de_pessoa'] = df['tipo_de_pessoa'].astype('category').cat.codes
     df['classificacao_da_doenca'] = df['classificacao_da_doenca'].astype('category').cat.codes
-    df['ente_devedor'] = df['ente_devedor'].astype('category').cat.codes
-    df['unidade'] = df['unidade'].astype('category').cat.codes
 
     # Removendo linhas com valores nulos na coluna target
     df = df.dropna(subset=['data_da_autuacao'])
@@ -756,8 +752,6 @@ def train_baixa_model(request):
     df['data_da_baixa'] = pd.to_datetime(df['data_da_baixa']).astype('int64') / 10 ** 9
     df['tipo_de_pessoa'] = df['tipo_de_pessoa'].astype('category').cat.codes
     df['classificacao_da_doenca'] = df['classificacao_da_doenca'].astype('category').cat.codes
-    df['ente_devedor'] = df['ente_devedor'].astype('category').cat.codes
-    df['unidade'] = df['unidade'].astype('category').cat.codes
 
     # Removendo linhas com valores nulos na coluna target
     df = df.dropna(subset=['data_da_baixa'])
@@ -913,8 +907,4 @@ def create_df(dados_formulario):
     df['data_de_nascimento'] = pd.to_datetime(df['data_de_nascimento']).astype('int64') / 10 ** 9
     if 'data_da_validacao' in df.columns: df['data_da_validacao'] = pd.to_datetime(df['data_da_validacao']).astype('int64') / 10 ** 9
     if 'data_da_autuacao' in df.columns: df['data_da_autuacao'] = pd.to_datetime(df['data_da_autuacao']).astype('int64') / 10 ** 9
-    df['tipo_de_pessoa'] = df['tipo_de_pessoa'].astype('category').cat.codes
-    df['classificacao_da_doenca'] = df['classificacao_da_doenca'].astype('category').cat.codes
-    df['ente_devedor'] = df['ente_devedor'].astype('category').cat.codes
-    df['unidade'] = df['unidade'].astype('category').cat.codes
     return df
