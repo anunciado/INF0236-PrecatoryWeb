@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predição de Data da Baixa</title>
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link href="../../../static/css/styles.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="mb-0">Predição de Data da Baixa</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="data_da_criacao" class="form-label">Data da Criação:</label>
+                            <input type="date" class="form-control" id="data_da_criacao" name="data_da_criacao"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tipo_de_pessoa" class="form-label">Tipo de Pessoa:</label>
+                            <select class="form-select" id="tipo_de_pessoa" name="tipo_de_pessoa" required>
+                                <option value="0">Pessoa Física</option>
+                                <option value="1">Pessoa Jurídica</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="data_de_nascimento" class="form-label">Data de Nascimento:</label>
+                            <input type="date" class="form-control" id="data_de_nascimento" name="data_de_nascimento"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="classificacao_da_doenca" class="form-label">Classificação da Doença:</label>
+                            <select class="form-select" id="classificacao_da_doenca" name="classificacao_da_doenca"
+                                    required>
+                                <option value="0">Não Possui</option>
+                                <option value="1">Geral</option>
+                                <option value="2">PCD</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="ente_devedor_id" class="form-label">Ente Devedor:</label>
+                            <select class="form-select" id="ente_devedor_id" name="ente_devedor_id" required>
+                                {% for ente in entes_devedores %}
+                                    <option value="{{ ente.id }}">{{ ente.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="unidade_id" class="form-label">Unidade:</label>
+                            <select class="form-select" id="unidade_id" name="unidade_id" required>
+                                {% for unidade in unidades %}
+                                    <option value="{{ unidade.id }}">{{ unidade.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="valor" class="form-label">Valor:</label>
+                            <input type="number" step="0.01" class="form-control" id="valor" name="valor" required>
+                        </div>
+
+                        <div class="mb-3 text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">Prever Data da Baixa</button>
+                            <a href="{% url 'ia_menu_alias' %}" class="btn btn-success btn-lg">Voltar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

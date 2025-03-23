@@ -1,0 +1,43 @@
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+{% load render_table from django_tables2 %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lista de Entes Devedores</title>
+    <link href="../../../static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5><a href="{% url 'home' %}">Página Inicial</a></h5>
+            <div class="d-flex">
+                <span class="navbar-text me-3">Bem-vindo, {{ user }}</span>
+                <a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            {% render_table table %}
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'ente_devedor_create_alias' %}" class="btn btn-primary">
+                Incluir novos entes devedores
+            </a>
+            <a href="{% url 'ente_devedor_em_lote_create_alias' %}" class="btn btn-secondary">
+                Incluir novos entes devedores em lote
+            </a>
+            <a href="{% url 'ente_devedor_export_csv' %}" class="btn btn-success">
+                Exportar todos os entes devedores
+            </a>
+        </div>
+    </div>
+</body>
+</html>

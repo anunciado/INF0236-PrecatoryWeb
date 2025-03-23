@@ -1,0 +1,90 @@
+{% load static %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formulário de Baixa</title>
+    <link href="../../static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center">
+        <h5><a href="{% url 'baixa_menu_alias' %}">Baixa</a></h5>
+        <div class="d-flex">
+            <span class="navbar-text me-3">Bem-vindo, {{ user }}</span>
+            <a href="{% url 'logout' %}" class="btn btn-danger">Sair</a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    {% bootstrap_field form.data_da_criacao %}
+                </div>
+
+                <div class="mb-3">
+                    {% bootstrap_field form.tipo_de_pessoa %}
+                </div>
+
+                <div class="mb-3">
+                    {% bootstrap_field form.data_de_nascimento %}
+                </div>
+
+                <div class="mb-3">
+                    {% bootstrap_field form.classificacao_da_doenca %}
+                </div>
+
+                <div class="mb-3">
+                    {% bootstrap_field form.ente_devedor %}
+                </div>
+
+                <div class="mb-3">
+                    {% bootstrap_field form.unidade %}
+                </div>
+
+                <div class="mb-3">
+                    {% bootstrap_field form.valor %}
+                </div>
+
+                <div class="mb-3">
+                    {% bootstrap_field form.data_da_validacao %}
+                </div>
+
+                <div class="mb-3">
+                    {% bootstrap_field form.ano_de_orcamento %}
+                </div>
+
+                <div class="mb-3">
+                    {% bootstrap_field form.data_da_autuacao %}
+                </div>
+
+                <div class="mb-3">
+                    {% bootstrap_field form.data_da_baixa %}
+                </div>
+
+                <div class="mb-3">
+                    {% bootstrap_field form.ativo %}
+                </div>
+
+                <div class="text-end">
+                    {% if "unidade_update" in request.path %}
+                        <button type="submit" class="btn btn-warning">Atualizar</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
